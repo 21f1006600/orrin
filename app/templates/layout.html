@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Orrin — Ask your company anything{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-logo-dot"></div>
+            <span class="navbar-brand-name">Orrin</span>
+        </div>
+        <div class="navbar-links">
+            <a href="/#product">Product</a>
+            <a href="/#how-it-works">How it works</a>
+            <a href="/#demo">Demo</a>
+        </div>
+        <div class="navbar-actions">
+            <a href="/login" class="navbar-signin">Sign in</a>
+            <a href="/connect" class="btn btn-primary btn-sm">Connect Workspace</a>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-brand">
+            <div class="footer-logo-dot"></div>
+            <span class="footer-brand-name">Orrin</span>
+        </div>
+        <span>Your company's operational memory.</span>
+        <div class="footer-links">
+            <a href="/#demo">Demo</a>
+            <a href="/login">Get started</a>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

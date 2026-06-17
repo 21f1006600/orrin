@@ -15,4 +15,6 @@ __pycache__/
 
 # OS files
 .DS_Store
-Thumbs.db
+Thumbs.db.env
+venv/
+*.db

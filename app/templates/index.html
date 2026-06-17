@@ -1,11 +1,139 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Orrin — Ask your company anything</title>
-</head>
-<body style="background:#0a0a0a; color:white; font-family:sans-serif; text-align:center; padding:100px;">
-    <h1>Ask your company anything.</h1>
-    <p>Orrin is loading up. 🚀</p>
-</body>
-</html>
+{% extends "layout.html" %}
+
+{% block title %}Orrin — Ask your company anything{% endblock %}
+
+{% block content %}
+
+    <section class="hero">
+        <span class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Operational intelligence for startups
+        </span>
+        <h1 class="hero-title">Ask your company anything.</h1>
+        <p class="hero-subtitle">
+            Orrin connects Slack and Linear so founders can get instant answers instead of searching through conversations and tickets.
+        </p>
+        <div class="hero-actions">
+            <a href="/connect" class="btn btn-primary">Connect Workspace →</a>
+            <a href="#demo" class="btn btn-secondary">▷ See Demo</a>
+        </div>
+    </section>
+
+    <section id="demo" class="demo-section">
+        <div class="demo-card">
+            <div class="demo-card-header">
+                <span class="demo-dot"></span>
+                <span class="demo-dot"></span>
+                <span class="demo-dot"></span>
+                <span class="demo-card-title">Ask Orrin</span>
+            </div>
+            <div class="demo-card-body">
+                <div class="demo-question">
+                    <div class="demo-question-bubble">
+                        Why is the onboarding redesign delayed?
+                    </div>
+                </div>
+                <div class="demo-answer-row">
+                    <div class="demo-avatar">
+                        <span class="demo-avatar-dot"></span>
+                    </div>
+                    <div class="demo-answer-card">
+                        <div class="demo-answer-header">
+                            <span class="demo-answer-name">Orrin</span>
+                            <span class="confidence-badge">
+                                <span class="confidence-dot"></span>
+                                92% confidence
+                            </span>
+                        </div>
+                        <p class="demo-answer-text">
+                            The project is delayed because API migration work remains blocked. Two related Linear issues are unresolved, and engineers discussed dependency concerns in Slack yesterday.
+                        </p>
+                        <p class="evidence-label">Evidence</p>
+                        <div class="evidence-grid">
+                            <div class="evidence-card">
+                                <p class="evidence-title">Slack discussion</p>
+                                <p class="evidence-meta">#eng-backend</p>
+                            </div>
+                            <div class="evidence-card">
+                                <p class="evidence-title">Linear ORR-123</p>
+                                <p class="evidence-meta">Blocked</p>
+                            </div>
+                            <div class="evidence-card">
+                                <p class="evidence-title">Sprint notes</p>
+                                <p class="evidence-meta">Mon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Stop hunting for answers across tools</h2>
+        <p class="section-subtitle">
+            Orrin becomes your company's operational memory — so the answer is one question away, not five tabs deep.
+        </p>
+    </section>
+
+    <section class="comparison">
+        <div class="comparison-card">
+            <p class="comparison-label">Without Orrin</p>
+            <div class="comparison-item">Search Slack</div>
+            <div class="comparison-item">Search Linear</div>
+            <div class="comparison-item">Ask teammates</div>
+            <div class="comparison-item">Check docs</div>
+            <div class="comparison-item">Wait for answers</div>
+        </div>
+        <div class="comparison-card comparison-card-highlight">
+            <p class="comparison-label comparison-label-highlight">With Orrin</p>
+            <div class="comparison-item comparison-item-check">✓ Ask one question</div>
+            <div class="comparison-item comparison-item-check">✓ Get one synthesized answer</div>
+            <div class="comparison-item comparison-item-check">✓ See supporting evidence</div>
+            <div class="comparison-item comparison-item-check">✓ Move faster</div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="section section-wide">
+        <h2 class="section-title">Linear and Perplexity, for<br>your company's memory</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-card-header">
+                    <div class="step-icon">
+                        <svg width="20" height="20" viewBox="0 0 122.8 122.8"><path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9z" fill="#36C5F0"/><path d="M38.7 25.8c-7.1 0-12.9-5.8-12.9-12.9S31.6 0 38.7 0s12.9 5.8 12.9 12.9v12.9H38.7z" fill="#2EB67D"/><path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2z" fill="#ECB22E"/><path d="M84.1 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9z" fill="#E01E5A"/><path d="M38.7 97c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9zm0-71.2c0-7.1 5.8-12.9 12.9-12.9h45.6c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H51.6c-7.1 0-12.9-5.8-12.9-12.9z" fill="#E01E5A" opacity="0"/></svg>
+                    </div>
+                    <span class="step-number">01</span>
+                </div>
+                <p class="step-title">Connect Slack</p>
+                <p class="step-description">Orrin securely indexes conversations across your channels.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-card-header">
+                    <div class="step-icon step-icon-linear">
+                        <svg width="18" height="18" viewBox="0 0 100 100" fill="none"><path d="M2.06163 60.8569C0.997151 60.8569 0.166626 59.9128 0.332372 58.8607C2.31934 46.2087 8.18029 34.4204 17.1925 25.0529C28.3618 13.4575 43.5755 6.83879 59.6398 6.86903C75.7041 6.89927 91.0027 13.5742 102.13 25.2098C111.111 34.6116 116.928 46.4203 118.876 59.0784C119.04 60.1305 118.208 61.0729 117.144 61.0729L102.83 61.0729C102.018 61.0729 101.339 60.4754 101.105 59.6986C99.0834 53.0093 95.5043 46.8265 90.629 41.7245C82.7423 33.6051 71.9657 28.9999 60.6803 28.9759C49.3948 28.9519 38.5979 33.5102 30.6754 41.5946C25.7727 46.6791 22.1622 52.846 20.1147 59.5236C19.8786 60.2982 19.2002 60.8929 18.3905 60.8929L2.06163 60.8569Z" fill="#5E6AD2"/><path d="M119.022 64.7373C120.087 64.7373 120.917 65.6814 120.752 66.7335C118.764 79.3855 112.903 91.1738 103.891 100.541C92.7216 112.137 77.5079 118.755 61.4436 118.725C45.3793 118.695 30.0807 112.02 18.9532 100.384C9.97233 90.9826 4.15524 79.174 2.20748 66.5158C2.04374 65.4637 2.87568 64.5214 3.93937 64.5214L18.2511 64.5214C19.0635 64.5214 19.7426 65.119 19.9763 65.8957C21.998 72.585 25.5771 78.7679 30.4523 83.8698C38.339 91.9893 49.1157 96.5944 60.4011 96.6184C71.6866 96.6424 82.4835 92.0842 90.406 83.9997C95.3087 78.9153 98.919 72.7483 100.967 66.0708C101.203 65.2961 101.881 64.7013 102.692 64.7013L119.022 64.7373Z" fill="#5E6AD2"/></svg>
+                    </div>
+                    <span class="step-number">02</span>
+                </div>
+                <p class="step-title">Connect Linear</p>
+                <p class="step-description">Issues, statuses, and assignees become part of company memory.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-card-header">
+                    <div class="step-icon">?</div>
+                    <span class="step-number">03</span>
+                </div>
+                <p class="step-title">Ask anything</p>
+                <p class="step-description">Get synthesized answers with evidence and a confidence score.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta-wrapper">
+        <div class="final-cta">
+            <h2 class="final-cta-title">Give your company a memory.</h2>
+            <p class="final-cta-subtitle">Connect your workspace and start asking questions in minutes.</p>
+            <a href="/connect" class="btn btn-primary">Connect Workspace →</a>
+        </div>
+    </section>
+
+{% endblock %}
