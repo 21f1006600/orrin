@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}Connect your workspace — Orrin{% endblock %}
+
+{% block content %}
+
+    <section class="connect-section">
+        <div class="connect-header">
+            <h1 class="connect-title">Connect your workspace</h1>
+            <p class="connect-subtitle">Orrin needs Slack and Linear to start answering questions about your company.</p>
+        </div>
+
+        <div class="connect-cards">
+
+            <div class="connect-card">
+                <div class="connect-card-top">
+                    <div class="connect-icon">
+                        <svg width="22" height="22" viewBox="0 0 122.8 122.8"><path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9z" fill="#36C5F0"/><path d="M38.7 25.8c-7.1 0-12.9-5.8-12.9-12.9S31.6 0 38.7 0s12.9 5.8 12.9 12.9v12.9H38.7z" fill="#2EB67D"/><path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2z" fill="#ECB22E"/><path d="M84.1 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9z" fill="#E01E5A"/></svg>
+                    </div>
+                    {% if user.slack_bot_token %}
+                        <span class="connect-status connect-status-active">
+                            <span class="connect-status-dot"></span>
+                            Connected
+                        </span>
+                    {% else %}
+                        <span class="connect-status">Not connected</span>
+                    {% endif %}
+                </div>
+                <p class="connect-card-title">Slack</p>
+                <p class="connect-card-description">
+                    {% if user.slack_team_name %}
+                        Connected to <strong>{{ user.slack_team_name }}</strong>
+                    {% else %}
+                        Orrin securely indexes conversations across your channels.
+                    {% endif %}
+                </p>
+                {% if not user.slack_bot_token %}
+                    <a href="{{ url_for('main.slack_login') }}" class="btn btn-secondary connect-btn">Connect Slack</a>
+                {% endif %}
+            </div>
+
+            <div class="connect-card">
+                <div class="connect-card-top">
+                    <div class="connect-icon connect-icon-linear">
+                        <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><path d="M2.06163 60.8569C0.997151 60.8569 0.166626 59.9128 0.332372 58.8607C2.31934 46.2087 8.18029 34.4204 17.1925 25.0529C28.3618 13.4575 43.5755 6.83879 59.6398 6.86903C75.7041 6.89927 91.0027 13.5742 102.13 25.2098C111.111 34.6116 116.928 46.4203 118.876 59.0784C119.04 60.1305 118.208 61.0729 117.144 61.0729L102.83 61.0729C102.018 61.0729 101.339 60.4754 101.105 59.6986C99.0834 53.0093 95.5043 46.8265 90.629 41.7245C82.7423 33.6051 71.9657 28.9999 60.6803 28.9759C49.3948 28.9519 38.5979 33.5102 30.6754 41.5946C25.7727 46.6791 22.1622 52.846 20.1147 59.5236C19.8786 60.2982 19.2002 60.8929 18.3905 60.8929L2.06163 60.8569Z" fill="#5E6AD2"/><path d="M119.022 64.7373C120.087 64.7373 120.917 65.6814 120.752 66.7335C118.764 79.3855 112.903 91.1738 103.891 100.541C92.7216 112.137 77.5079 118.755 61.4436 118.725C45.3793 118.695 30.0807 112.02 18.9532 100.384C9.97233 90.9826 4.15524 79.174 2.20748 66.5158C2.04374 65.4637 2.87568 64.5214 3.93937 64.5214L18.2511 64.5214C19.0635 64.5214 19.7426 65.119 19.9763 65.8957C21.998 72.585 25.5771 78.7679 30.4523 83.8698C38.339 91.9893 49.1157 96.5944 60.4011 96.6184C71.6866 96.6424 82.4835 92.0842 90.406 83.9997C95.3087 78.9153 98.919 72.7483 100.967 66.0708C101.203 65.2961 101.881 64.7013 102.692 64.7013L119.022 64.7373Z" fill="#5E6AD2"/></svg>
+                    </div>
+                    {% if user.linear_access_token %}
+                        <span class="connect-status connect-status-active">
+                            <span class="connect-status-dot"></span>
+                            Connected
+                        </span>
+                    {% else %}
+                        <span class="connect-status">Not connected</span>
+                    {% endif %}
+                </div>
+                <p class="connect-card-title">Linear</p>
+                <p class="connect-card-description">
+                    {% if user.linear_workspace_name %}
+                        Connected to <strong>{{ user.linear_workspace_name }}</strong>
+                    {% else %}
+                        Issues, statuses, and assignees become part of company memory.
+                    {% endif %}
+                </p>
+                {% if not user.linear_access_token %}
+                    <a href="{{ url_for('main.linear_login') }}" class="btn btn-secondary connect-btn">Connect Linear</a>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {% if user.slack_bot_token and user.linear_access_token %}
+            <a href="/dashboard" class="btn btn-primary connect-continue">Go to dashboard →</a>
+        {% else %}
+            <p class="connect-footnote">Connect both tools to start asking questions.</p>
+        {% endif %}
+    </section>
+
+{% endblock %}

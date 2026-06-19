@@ -55,8 +55,62 @@ def logout():
     return redirect(url_for('main.index'))
 
 
+@main.route('/auth/slack')
+def slack_login():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+    redirect_uri = url_for('main.slack_callback', _external=True)
+    return oauth.slack.authorize_redirect(redirect_uri)
+
+
+@main.route('/auth/slack/callback')
+def slack_callback():
+    token = oauth.slack.authorize_access_token()
+
+    current_user = User.query.filter_by(email=session['user_email']).first()
+    current_user.slack_team_id = token.get('team', {}).get('id')
+    current_user.slack_team_name = token.get('team', {}).get('name')
+    current_user.slack_bot_token = token.get('access_token')
+    db.session.commit()
+
+    return redirect(url_for('main.connect'))
+
+
+@main.route('/auth/linear')
+def linear_login():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+    redirect_uri = url_for('main.linear_callback', _external=True)
+    return oauth.linear.authorize_redirect(redirect_uri)
+
+
+@main.route('/auth/linear/callback')
+def linear_callback():
+    token = oauth.linear.authorize_access_token()
+    access_token = token.get('access_token')
+
+    # Fetch the workspace name using Linear's GraphQL API
+    import requests
+    response = requests.post(
+        'https://api.linear.app/graphql',
+        json={'query': '{ organization { name } }'},
+        headers={'Authorization': access_token}
+    )
+    org_data = response.json()
+    workspace_name = org_data.get('data', {}).get('organization', {}).get('name', 'Linear Workspace')
+
+    current_user = User.query.filter_by(email=session['user_email']).first()
+    current_user.linear_access_token = access_token
+    current_user.linear_workspace_name = workspace_name
+    db.session.commit()
+
+    return redirect(url_for('main.connect'))
+
+
 @main.route('/connect')
 def connect():
     if 'user_email' not in session:
         return redirect(url_for('main.login'))
-    return f"Welcome {session.get('user_name')}! Connect workspace page coming next."
+
+    current_user = User.query.filter_by(email=session['user_email']).first()
+    return render_template('connect.html', user=current_user)

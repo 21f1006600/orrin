@@ -26,6 +26,24 @@ def create_app():
         client_kwargs={'scope': 'openid email profile'}
     )
 
+    oauth.register(
+        name='slack',
+        client_id=os.getenv('SLACK_CLIENT_ID'),
+        client_secret=os.getenv('SLACK_CLIENT_SECRET'),
+        access_token_url='https://slack.com/api/oauth.v2.access',
+        authorize_url='https://slack.com/oauth/v2/authorize',
+        client_kwargs={'scope': 'channels:history,channels:read,groups:read,groups:history,users:read'}
+    )
+
+    oauth.register(
+        name='linear',
+        client_id=os.getenv('LINEAR_CLIENT_ID'),
+        client_secret=os.getenv('LINEAR_CLIENT_SECRET'),
+        access_token_url='https://api.linear.app/oauth/token',
+        authorize_url='https://linear.app/oauth/authorize',
+        client_kwargs={'scope': 'read', 'token_endpoint_auth_method': 'client_secret_post'}
+    )
+
     from app.routes import main
     app.register_blueprint(main)
 
