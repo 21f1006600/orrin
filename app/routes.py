@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session
 from app import oauth, db
 from app.models import User
+from app.sync import sync_slack_data, sync_linear_data
 
 main = Blueprint('main', __name__)
 
@@ -73,6 +74,8 @@ def slack_callback():
     current_user.slack_bot_token = token.get('access_token')
     db.session.commit()
 
+    sync_slack_data(current_user)
+
     return redirect(url_for('main.connect'))
 
 
@@ -104,7 +107,26 @@ def linear_callback():
     current_user.linear_workspace_name = workspace_name
     db.session.commit()
 
+    sync_linear_data(current_user)
+
     return redirect(url_for('main.connect'))
+
+
+@main.route('/sync')
+def manual_sync():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+
+    current_user = User.query.filter_by(email=session['user_email']).first()
+    results = {}
+
+    if current_user.slack_bot_token:
+        results['slack'] = sync_slack_data(current_user)
+
+    if current_user.linear_access_token:
+        results['linear'] = sync_linear_data(current_user)
+
+    return results
 
 
 @main.route('/connect')
@@ -114,3 +136,31 @@ def connect():
 
     current_user = User.query.filter_by(email=session['user_email']).first()
     return render_template('connect.html', user=current_user)
+
+
+@main.route('/dashboard')
+def dashboard():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+
+    current_user = User.query.filter_by(email=session['user_email']).first()
+    return render_template('dashboard.html', user=current_user, result=None, question=None)
+
+
+@main.route('/dashboard/ask', methods=['POST'])
+def dashboard_ask():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+
+    from flask import request
+    from app.ai import ask_orrin
+
+    current_user = User.query.filter_by(email=session['user_email']).first()
+    question = request.form.get('question', '').strip()
+
+    if not question:
+        return redirect(url_for('main.dashboard'))
+
+    result = ask_orrin(current_user, question)
+
+    return render_template('dashboard.html', user=current_user, result=result, question=question)

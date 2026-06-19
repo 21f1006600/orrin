@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Orrin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="dash-layout">
+
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar-top">
+            <div class="navbar-brand">
+                <div class="navbar-logo-dot"></div>
+                <span class="navbar-brand-name">Orrin</span>
+            </div>
+        </div>
+        <nav class="dash-nav">
+            <a href="/dashboard" class="dash-nav-item dash-nav-active">Ask Orrin</a>
+            <a href="/connect" class="dash-nav-item">Manage connections</a>
+        </nav>
+        <div class="dash-sidebar-bottom">
+            <div class="dash-user-pill">
+                <img src="{{ user.picture }}" class="dash-user-avatar" alt="">
+                <div>
+                    <p class="dash-user-name">{{ user.name }}</p>
+                    <p class="dash-user-sub">{{ user.slack_team_name or "Workspace" }}</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="dash-main">
+
+        {% if not result %}
+            <div class="ask-hero">
+                <div class="ask-hero-dot"></div>
+                <h1 class="ask-hero-title">What do you want to know?</h1>
+                <p class="ask-hero-subtitle">Orrin searches Slack and Linear, then answers with evidence.</p>
+
+                <form action="/dashboard/ask" method="POST" class="ask-form">
+                    <input type="text" name="question" class="ask-input" placeholder="Ask Orrin anything about your company...">
+                    <button type="submit" class="ask-submit">→</button>
+                </form>
+
+                <p class="ask-suggested-label">Suggested questions</p>
+                <div class="ask-suggested-grid">
+                    <button class="ask-suggested-chip" onclick="askThis('What is blocking the most urgent project?')">What is blocking the most urgent project?</button>
+                    <button class="ask-suggested-chip" onclick="askThis('What slipped this sprint?')">What slipped this sprint?</button>
+                    <button class="ask-suggested-chip" onclick="askThis('What decisions were made this week?')">What decisions were made this week?</button>
+                    <button class="ask-suggested-chip" onclick="askThis('What is the team currently focused on?')">What is the team currently focused on?</button>
+                </div>
+            </div>
+        {% else %}
+            <div class="answer-view">
+                <a href="/dashboard" class="answer-back">← Ask another question</a>
+                <h1 class="answer-question">{{ question }}</h1>
+
+                <div class="answer-card">
+                    <div class="answer-card-header">
+                        <div class="answer-card-brand">
+                            <div class="navbar-logo-dot"></div>
+                            <span>Orrin</span>
+                        </div>
+                        <span class="answer-timestamp">Synthesized just now</span>
+                    </div>
+
+                    <p class="answer-text">{{ result.answer }}</p>
+
+                    {% if result.root_causes %}
+                    <div class="root-causes-box">
+                        <p class="root-causes-label">Root causes</p>
+                        {% for cause in result.root_causes %}
+                        <div class="root-cause-item">
+                            <span class="root-cause-number">{{ loop.index }}</span>
+                            <span>{{ cause }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="confidence-box">
+                        <p class="confidence-box-label">Confidence</p>
+                        <div class="confidence-bar-track">
+                            <div class="confidence-bar-fill" data-confidence="{{ result.confidence }}"></div>
+                        </div>
+                        <span class="confidence-box-value">{{ result.confidence }}%</span>
+                    </div>
+                    <p class="answer-basis">Based on {{ result.slack_sources|length }} Slack messages and {{ result.linear_sources|length }} Linear issues.</p>
+                </div>
+
+                <div class="sources-grid">
+                    <div class="sources-column">
+                        <p class="sources-heading">Slack sources ({{ result.slack_sources|length }})</p>
+                        {% for src in result.slack_sources %}
+                        <div class="source-card">
+                            <div class="source-card-top">
+                                <span class="source-card-author">{{ src.author }}</span>
+                                <span class="source-card-channel">#{{ src.channel }}</span>
+                            </div>
+                            <p class="source-card-text">"{{ src.text }}"</p>
+                            <p class="source-card-time">{{ src.posted_at }}</p>
+                        </div>
+                        {% else %}
+                        <p class="source-empty">No Slack sources used.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="sources-column">
+                        <p class="sources-heading">Linear sources ({{ result.linear_sources|length }})</p>
+                        {% for src in result.linear_sources %}
+                        <div class="source-card">
+                            <div class="source-card-top">
+                                <span class="source-card-author">{{ src.identifier }}</span>
+                                <span class="status-pill status-{{ src.status|lower|replace(' ', '-') }}">{{ src.status }}</span>
+                            </div>
+                            <p class="source-card-text">{{ src.title }}</p>
+                            <p class="source-card-time">{{ src.assignee or "Unassigned" }}</p>
+                        </div>
+                        {% else %}
+                        <p class="source-empty">No Linear sources used.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <form action="/dashboard/ask" method="POST" class="ask-form ask-form-followup">
+                    <input type="text" name="question" class="ask-input" placeholder="Ask a follow-up question...">
+                    <button type="submit" class="ask-submit">→</button>
+                </form>
+            </div>
+        {% endif %}
+
+    </main>
+</div>
+
+<script>
+function askThis(question) {
+    const form = document.querySelector('.ask-form');
+    form.querySelector('input[name="question"]').value = question;
+    form.submit();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const bar = document.querySelector('.confidence-bar-fill');
+    if (bar) {
+        const value = bar.getAttribute('data-confidence');
+        bar.style.width = value + '%';
+    }
+});
+</script>
+</body>
+</html>
