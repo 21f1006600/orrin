@@ -20,8 +20,13 @@
             <a href="/#demo">Demo</a>
         </div>
         <div class="navbar-actions">
-            <a href="/login" class="navbar-signin">Sign in</a>
-            <a href="/connect" class="btn btn-primary btn-sm">Connect Workspace</a>
+            {% if session.get('user_email') %}
+                <a href="/logout" class="navbar-signin">Log out</a>
+                <a href="/dashboard" class="btn btn-primary btn-sm">Go to dashboard</a>
+            {% else %}
+                <a href="/login" class="navbar-signin">Sign in</a>
+                <a href="/connect" class="btn btn-primary btn-sm">Connect Workspace</a>
+            {% endif %}
         </div>
     </nav>
 

@@ -7,6 +7,38 @@ from app.models import SlackMessage, LinearIssue
 def sync_slack_data(user):
     """Pull recent messages from all public channels the bot can see."""
     headers = {'Authorization': f'Bearer {user.slack_bot_token}'}
+    user_name_cache = {}
+
+    # Clean up old system messages that were stored before the subtype filter existed
+    SlackMessage.query.filter_by(user_id=user.id).filter(
+        SlackMessage.message_text.like('%has joined the channel%')
+    ).delete(synchronize_session=False)
+    db.session.commit()
+
+    def get_user_name(slack_user_id):
+        if not slack_user_id or slack_user_id == 'unknown':
+            return 'Unknown'
+        if slack_user_id in user_name_cache:
+            return user_name_cache[slack_user_id]
+
+        try:
+            response = requests.get(
+                'https://slack.com/api/users.info',
+                headers=headers,
+                params={'user': slack_user_id}
+            )
+            data = response.json()
+            if data.get('ok'):
+                name = data['user'].get('real_name') or data['user'].get('name') or slack_user_id
+            else:
+                print(f"Slack users.info failed for {slack_user_id}: {data.get('error')}")
+                name = slack_user_id
+        except Exception as e:
+            print(f"Slack users.info exception for {slack_user_id}: {e}")
+            name = slack_user_id
+
+        user_name_cache[slack_user_id] = name
+        return name
 
     # Step 1: get list of channels
     channels_response = requests.get(
@@ -42,6 +74,10 @@ def sync_slack_data(user):
             if not msg.get('text'):
                 continue
 
+            # skip system/subtype messages like channel_join, bot_message, etc
+            if msg.get('subtype'):
+                continue
+
             existing = SlackMessage.query.filter_by(
                 user_id=user.id,
                 channel_id=channel_id,
@@ -49,14 +85,17 @@ def sync_slack_data(user):
             ).first()
 
             if existing:
-                continue  # avoid duplicate entries on repeated syncs
+                # refresh author name in case it was stored as a raw ID before
+                existing.author = get_user_name(msg.get('user'))
+                existing.message_text = msg.get('text')
+                continue
 
             new_message = SlackMessage(
                 user_id=user.id,
                 channel_id=channel_id,
                 channel_name=channel_name,
                 message_text=msg.get('text'),
-                author=msg.get('user', 'unknown'),
+                author=get_user_name(msg.get('user')),
                 posted_at=datetime.fromtimestamp(float(msg['ts']))
             )
             db.session.add(new_message)
