@@ -3,13 +3,17 @@ import json
 import random
 from app.models import SlackMessage, LinearIssue
 
-# Set to True to use free mock responses instead of calling the real Anthropic API.
-# Flip to False once you're ready to spend real API credits.
-MOCK_MODE = True
+# Set to True to use free mock responses instead of calling the real Gemini API.
+# Flip to False once you have a free Gemini API key from aistudio.google.com.
+MOCK_MODE = False
 
 if not MOCK_MODE:
-    import anthropic
-    client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
+    import google.generativeai as genai
+    genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+    # gemini-2.5-flash-lite: free tier as of June 2026, cheapest paid option if quota exceeded
+    # gemini-2.0-flash and gemini-2.0-flash-lite were both shut down June 1, 2026
+    # check https://ai.google.dev/gemini-api/docs/models for current free-tier models if this breaks
+    model = genai.GenerativeModel('gemini-2.5-flash-lite')
 
 
 def build_context(user):
@@ -72,7 +76,7 @@ def ask_orrin(user, question):
 
     if not slack_text and not linear_text:
         return {
-            "answer": "There's no synced data yet. Connect Slack and Linear, then try asking again.",
+            "answer": "There's no synced data yet. Connect Slack or Linear, then try asking again.",
             "confidence": 0,
             "root_causes": [],
             "slack_sources": [],
@@ -92,7 +96,9 @@ def ask_orrin(user, question):
     if MOCK_MODE:
         result = _generate_mock_answer(question, slack_messages, linear_issues)
     else:
-        user_prompt = f"""Question: {question}
+        full_prompt = f"""{SYSTEM_PROMPT}
+
+Question: {question}
 
 SLACK MESSAGES:
 {numbered_slack if numbered_slack else "No Slack messages available."}
@@ -102,14 +108,8 @@ LINEAR ISSUES:
 
 Answer the question using only the data above. Return valid JSON only."""
 
-        response = client.messages.create(
-            model="claude-sonnet-4-5",
-            max_tokens=1000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}]
-        )
-
-        raw_text = response.content[0].text.strip()
+        response = model.generate_content(full_prompt)
+        raw_text = response.text.strip()
 
         if raw_text.startswith("```"):
             raw_text = raw_text.strip("`").replace("json\n", "", 1)
@@ -162,7 +162,7 @@ def _generate_mock_answer(question, slack_messages, linear_issues):
 
     if not slack_messages and not linear_issues:
         return {
-            "answer": "There's no synced data yet. Connect Slack and Linear, then try asking again.",
+            "answer": "There's no synced data yet. Connect Slack or Linear, then try asking again.",
             "confidence": 0,
             "root_causes": [],
             "used_slack_indexes": [],
@@ -176,7 +176,11 @@ def _generate_mock_answer(question, slack_messages, linear_issues):
     used_slack_indexes = random.sample(range(len(slack_messages)), sample_slack_count) if slack_messages else []
     used_linear_indexes = random.sample(range(len(linear_issues)), sample_linear_count) if linear_issues else []
 
-    blocked_issues = [i for i in linear_issues if i.status and 'block' in i.status.lower()]
+    blocked_issues = [
+        i for i in linear_issues
+        if (i.status and 'block' in i.status.lower())
+        or (i.title and 'block' in i.title.lower())
+    ]
 
     if blocked_issues:
         primary_issue = blocked_issues[0]

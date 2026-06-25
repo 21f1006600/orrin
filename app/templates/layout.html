@@ -21,7 +21,7 @@
         </div>
         <div class="navbar-actions">
             {% if session.get('user_email') %}
-                <a href="/logout" class="navbar-signin">Log out</a>
+                <a href="/logout" class="navbar-logout">Log out</a>
                 <a href="/dashboard" class="btn btn-primary btn-sm">Go to dashboard</a>
             {% else %}
                 <a href="/login" class="navbar-signin">Sign in</a>

@@ -7,7 +7,7 @@
     <section class="connect-section">
         <div class="connect-header">
             <h1 class="connect-title">Connect your workspace</h1>
-            <p class="connect-subtitle">Orrin needs Slack and Linear to start answering questions about your company.</p>
+            <p class="connect-subtitle">Connect Slack, Linear, or both — Orrin works with whatever you give it.</p>
         </div>
 
         <div class="connect-cards">
@@ -68,10 +68,13 @@
 
         </div>
 
-        {% if user.slack_bot_token and user.linear_access_token %}
+        {% if user.slack_bot_token or user.linear_access_token %}
             <a href="/dashboard" class="btn btn-primary connect-continue">Go to dashboard →</a>
+            {% if not (user.slack_bot_token and user.linear_access_token) %}
+                <p class="connect-footnote">You can start now, or connect the other tool for more complete answers.</p>
+            {% endif %}
         {% else %}
-            <p class="connect-footnote">Connect both tools to start asking questions.</p>
+            <p class="connect-footnote">Connect at least one tool to start asking questions.</p>
         {% endif %}
     </section>
 

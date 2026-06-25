@@ -41,7 +41,8 @@
                 <p class="ask-hero-subtitle">Orrin searches Slack and Linear, then answers with evidence.</p>
 
                 <form action="/dashboard/ask" method="POST" class="ask-form">
-                    <input type="text" name="question" class="ask-input" placeholder="Ask Orrin anything about your company...">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="question" class="ask-input" placeholder="Ask Orrin anything about your company..." maxlength="500">
                     <button type="submit" class="ask-submit">→</button>
                 </form>
 
@@ -126,7 +127,8 @@
                 </div>
 
                 <form action="/dashboard/ask" method="POST" class="ask-form ask-form-followup">
-                    <input type="text" name="question" class="ask-input" placeholder="Ask a follow-up question...">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="question" class="ask-input" placeholder="Ask a follow-up question..." maxlength="500">
                     <button type="submit" class="ask-submit">→</button>
                 </form>
             </div>

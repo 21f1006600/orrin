@@ -1,20 +1,30 @@
-# Environment variables
+# Environment variables - NEVER commit secrets
 .env
+.env.local
+.env.*.local
 
-# Python virtual environment
+# Python
 venv/
-.venv/
-
-# Python cache
 __pycache__/
 *.pyc
+*.pyo
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Flask
+instance/
 
 # IDE
 .vscode/
 .idea/
 
-# OS files
+# OS
 .DS_Store
-Thumbs.db.env
-venv/
-*.db
+Thumbs.db
+
+# Logs (added now for the logging setup)
+*.log
+logs/
