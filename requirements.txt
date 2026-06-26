@@ -1,0 +1,11 @@
+flask
+flask-sqlalchemy
+flask-login
+flask-limiter
+flask-wtf
+authlib
+python-dotenv
+requests
+google-generativeai
+psycopg2-binary
+gunicorn

@@ -54,11 +54,10 @@ a {
     justify-self: start;
 }
 
-.navbar-logo-dot {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #4f7df9;
+.navbar-logo-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
 .navbar-brand-name {
@@ -558,12 +557,12 @@ a {
     margin-bottom: 32px;
 }
 
-.auth-logo-dot {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #4f7df9;
+.auth-logo-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
     margin: 0 auto 20px;
+    display: block;
 }
 
 .auth-title {
@@ -1142,11 +1141,10 @@ a {
     gap: 8px;
 }
 
-.footer-logo-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #4f7df9;
+.footer-logo-img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
 }
 
 .footer-brand-name {

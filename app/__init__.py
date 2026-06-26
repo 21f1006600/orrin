@@ -37,7 +37,17 @@ def create_app():
             "python -c \"import secrets; print(secrets.token_hex(32))\""
         )
     app.config['SECRET_KEY'] = secret_key
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///orrin.db'
+
+    # Use Postgres in production (Railway/Render provide DATABASE_URL automatically),
+    # fall back to local SQLite for development if DATABASE_URL isn't set.
+    database_url = os.getenv('DATABASE_URL', 'sqlite:///orrin.db')
+
+    # Railway/Render sometimes provide postgres:// but SQLAlchemy 1.4+ requires postgresql://
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True}
 
     # Harden session cookies
     app.config['SESSION_COOKIE_HTTPONLY'] = True
