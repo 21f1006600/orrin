@@ -9,7 +9,20 @@ MOCK_MODE = False
 
 if not MOCK_MODE:
     import google.generativeai as genai
-    genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+
+    gemini_key = os.getenv('GEMINI_API_KEY')
+    if not gemini_key:
+        raise RuntimeError(
+            "GEMINI_API_KEY is not set. Add it to your .env locally, "
+            "or to your Railway/Render environment variables in production."
+        )
+
+    # The underlying google-generativeai library sometimes falls back to
+    # checking GOOGLE_API_KEY directly from the environment, so set both
+    # to be safe regardless of which one it actually reads internally.
+    os.environ['GOOGLE_API_KEY'] = gemini_key
+
+    genai.configure(api_key=gemini_key)
     # gemini-2.5-flash-lite: free tier as of June 2026, cheapest paid option if quota exceeded
     # gemini-2.0-flash and gemini-2.0-flash-lite were both shut down June 1, 2026
     # check https://ai.google.dev/gemini-api/docs/models for current free-tier models if this breaks

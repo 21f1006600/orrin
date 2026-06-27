@@ -9,12 +9,18 @@ main = Blueprint('main', __name__)
 def get_current_user():
     """Returns the logged-in user's own record, derived strictly from session.
     Never accepts a user ID from the request itself - this is the IDOR-safe pattern.
-    Returns None if nobody is logged in.
+    Returns None if nobody is logged in, and clears stale sessions automatically
+    (e.g. if the database was reset but the browser still has an old session cookie).
     """
     email = session.get('user_email')
     if not email:
         return None
-    return User.query.filter_by(email=email).first()
+
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        session.clear()
+
+    return user
 
 
 @main.route('/')
@@ -187,6 +193,12 @@ def dashboard_ask():
     from app.ai import ask_orrin
 
     current_user = get_current_user()
+
+    if current_user is None:
+        # Stale session pointing to a user that no longer exists (e.g. after a db reset)
+        session.clear()
+        return redirect(url_for('main.login'))
+
     question = request.form.get('question', '').strip()
 
     # Input validation - reject empty or absurdly long questions
