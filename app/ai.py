@@ -11,6 +11,13 @@ if not MOCK_MODE:
     from google import genai as google_genai
 
     gemini_key = os.getenv('GEMINI_API_KEY')
+
+    # TEMPORARY DIAGNOSTIC - remove after confirming the key is actually present
+    if gemini_key:
+        print(f"DIAGNOSTIC: GEMINI_API_KEY found, starts with: {gemini_key[:6]}, length: {len(gemini_key)}")
+    else:
+        print("DIAGNOSTIC: GEMINI_API_KEY is None or empty in os.environ")
+
     if not gemini_key:
         raise RuntimeError(
             "GEMINI_API_KEY is not set. Add it to your .env locally, "
