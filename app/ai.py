@@ -147,7 +147,8 @@ Answer the question using only the data above. Return valid JSON only."""
                 "confidence": 0,
                 "root_causes": [],
                 "slack_sources": [],
-                "linear_sources": []
+                "linear_sources": [],
+                "is_retryable": True
             }
 
         raw_text = response.text.strip()

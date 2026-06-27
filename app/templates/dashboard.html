@@ -75,6 +75,14 @@
 
                     <p class="answer-text">{{ result.answer }}</p>
 
+                    {% if result.is_retryable %}
+                    <form action="/dashboard/ask" method="POST" class="retry-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="question" value="{{ question }}">
+                        <button type="submit" class="btn btn-secondary retry-btn">↻ Try again</button>
+                    </form>
+                    {% endif %}
+
                     {% if result.root_causes %}
                     <div class="root-causes-box">
                         <p class="root-causes-label">Root causes</p>
@@ -139,15 +147,35 @@
             </div>
         {% endif %}
 
+        <div class="thinking-overlay" id="thinkingOverlay">
+            <div class="thinking-pulse"></div>
+            <p class="thinking-text">Orrin is thinking<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span></p>
+            <p class="thinking-subtext">Searching Slack and Linear for evidence</p>
+        </div>
+
     </main>
 </div>
 
 <script>
+function showThinking() {
+    const overlay = document.getElementById('thinkingOverlay');
+    if (overlay) overlay.classList.add('thinking-visible');
+}
+
 function askThis(question) {
     const form = document.querySelector('.ask-form');
     form.querySelector('input[name="question"]').value = question;
+    showThinking();
     form.submit();
 }
+
+document.querySelectorAll('.ask-form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+        const input = form.querySelector('input[name="question"]');
+        if (!input.value.trim()) return; // let normal validation handle empty input
+        showThinking();
+    });
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     const bar = document.querySelector('.confidence-bar-fill');
