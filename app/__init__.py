@@ -7,9 +7,22 @@ from authlib.integrations.flask_client import OAuth
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
+from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 load_dotenv()
+
+# Only enable Sentry in production - no point tracking your own local testing
+if os.getenv('FLASK_ENV') == 'production' and os.getenv('SENTRY_DSN'):
+    sentry_sdk.init(
+        dsn=os.getenv('SENTRY_DSN'),
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.3,
+        environment="production",
+        send_default_pii=True,  # attaches logged-in user's email to crash reports
+    )
 
 db = SQLAlchemy()
 oauth = OAuth()
@@ -29,6 +42,10 @@ logger = logging.getLogger('orrin')
 
 def create_app():
     app = Flask(__name__)
+
+    # Trust Railway's reverse proxy headers so Flask correctly detects
+    # the original request was HTTPS, not the internal HTTP hop.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     secret_key = os.getenv('SECRET_KEY')
     if not secret_key:

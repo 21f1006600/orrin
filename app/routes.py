@@ -46,6 +46,7 @@ def google_callback():
         return redirect(url_for('main.login'))
 
     existing_user = User.query.filter_by(email=user_info['email']).first()
+    is_new_signup = existing_user is None
 
     if not existing_user:
         existing_user = User(
@@ -55,11 +56,15 @@ def google_callback():
         )
         db.session.add(existing_user)
         db.session.commit()
+        logger.info(f"NEW SIGNUP: {existing_user.email}")
 
     session.permanent = True
     session['user_email'] = existing_user.email
     session['user_name'] = existing_user.name
     session['user_picture'] = existing_user.picture
+
+    import sentry_sdk
+    sentry_sdk.set_user({"email": existing_user.email, "username": existing_user.name})
 
     logger.info(f"Login successful: {existing_user.email}")
 
@@ -92,6 +97,8 @@ def slack_callback():
     db.session.commit()
 
     sync_slack_data(current_user)
+
+    logger.info(f"SLACK CONNECTED: {current_user.email} -> {current_user.slack_team_name}")
 
     return redirect(url_for('main.connect'))
 
@@ -126,6 +133,8 @@ def linear_callback():
     db.session.commit()
 
     sync_linear_data(current_user)
+
+    logger.info(f"LINEAR CONNECTED: {current_user.email} -> {current_user.linear_workspace_name}")
 
     return redirect(url_for('main.connect'))
 
@@ -188,5 +197,7 @@ def dashboard_ask():
         question = question[:500]
 
     result = ask_orrin(current_user, question)
+
+    logger.info(f"QUESTION ASKED: {current_user.email} -> \"{question[:100]}\" (confidence: {result.get('confidence', 0)}%)")
 
     return render_template('dashboard.html', user=current_user, result=result, question=question)
