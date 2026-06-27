@@ -191,6 +191,8 @@ def dashboard_ask():
 
     from flask import request
     from app.ai import ask_orrin
+    from app.sync import sync_slack_data, sync_linear_data
+    from datetime import datetime, timedelta
 
     current_user = get_current_user()
 
@@ -207,6 +209,22 @@ def dashboard_ask():
 
     if len(question) > 500:
         question = question[:500]
+
+    # Auto-sync fresh data before answering, throttled to once per 60 seconds
+    # so rapid follow-up questions don't trigger redundant syncs every time.
+    sync_cooldown = timedelta(seconds=60)
+    needs_sync = (
+        current_user.last_synced_at is None
+        or datetime.utcnow() - current_user.last_synced_at > sync_cooldown
+    )
+
+    if needs_sync:
+        if current_user.slack_bot_token:
+            sync_slack_data(current_user)
+        if current_user.linear_access_token:
+            sync_linear_data(current_user)
+        current_user.last_synced_at = datetime.utcnow()
+        db.session.commit()
 
     result = ask_orrin(current_user, question)
 
