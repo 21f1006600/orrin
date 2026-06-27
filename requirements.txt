@@ -6,7 +6,7 @@ flask-wtf
 authlib
 python-dotenv
 requests
-google-generativeai
+google-genai
 psycopg2-binary
 gunicorn
 sentry-sdk[flask]

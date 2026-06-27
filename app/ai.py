@@ -8,7 +8,7 @@ from app.models import SlackMessage, LinearIssue
 MOCK_MODE = False
 
 if not MOCK_MODE:
-    import google.generativeai as genai
+    from google import genai as google_genai
 
     gemini_key = os.getenv('GEMINI_API_KEY')
     if not gemini_key:
@@ -17,16 +17,13 @@ if not MOCK_MODE:
             "or to your Railway/Render environment variables in production."
         )
 
-    # The underlying google-generativeai library sometimes falls back to
-    # checking GOOGLE_API_KEY directly from the environment, so set both
-    # to be safe regardless of which one it actually reads internally.
-    os.environ['GOOGLE_API_KEY'] = gemini_key
-
-    genai.configure(api_key=gemini_key)
+    # New SDK (google-genai), replacing the deprecated google-generativeai library
+    # which was officially sunset and caused credential-discovery failures in production.
+    genai_client = google_genai.Client(api_key=gemini_key)
     # gemini-2.5-flash-lite: free tier as of June 2026, cheapest paid option if quota exceeded
     # gemini-2.0-flash and gemini-2.0-flash-lite were both shut down June 1, 2026
     # check https://ai.google.dev/gemini-api/docs/models for current free-tier models if this breaks
-    model = genai.GenerativeModel('gemini-2.5-flash-lite')
+    GEMINI_MODEL = 'gemini-2.5-flash-lite'
 
 
 def build_context(user):
@@ -121,7 +118,10 @@ LINEAR ISSUES:
 
 Answer the question using only the data above. Return valid JSON only."""
 
-        response = model.generate_content(full_prompt)
+        response = genai_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=full_prompt
+        )
         raw_text = response.text.strip()
 
         if raw_text.startswith("```"):
