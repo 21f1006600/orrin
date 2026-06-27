@@ -12,12 +12,6 @@ if not MOCK_MODE:
 
     gemini_key = os.getenv('GEMINI_API_KEY')
 
-    # TEMPORARY DIAGNOSTIC - remove after confirming the key is actually present
-    if gemini_key:
-        print(f"DIAGNOSTIC: GEMINI_API_KEY found, starts with: {gemini_key[:6]}, length: {len(gemini_key)}")
-    else:
-        print("DIAGNOSTIC: GEMINI_API_KEY is None or empty in os.environ")
-
     if not gemini_key:
         raise RuntimeError(
             "GEMINI_API_KEY is not set. Add it to your .env locally, "
@@ -125,10 +119,37 @@ LINEAR ISSUES:
 
 Answer the question using only the data above. Return valid JSON only."""
 
-        response = genai_client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=full_prompt
-        )
+        import time
+        from google.genai import errors as genai_errors
+
+        max_retries = 3
+        response = None
+        last_error = None
+
+        for attempt in range(max_retries):
+            try:
+                response = genai_client.models.generate_content(
+                    model=GEMINI_MODEL,
+                    contents=full_prompt
+                )
+                break  # success, stop retrying
+            except genai_errors.ServerError as e:
+                last_error = e
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)  # 1s, then 2s, then 4s between retries
+                continue
+
+        if response is None:
+            # Gemini's servers were overloaded for all retry attempts - genuinely temporary,
+            # not a bug in our code. Give the user a clear, honest message instead of a crash.
+            return {
+                "answer": "Orrin's AI is experiencing high demand right now. Please try asking again in a moment.",
+                "confidence": 0,
+                "root_causes": [],
+                "slack_sources": [],
+                "linear_sources": []
+            }
+
         raw_text = response.text.strip()
 
         if raw_text.startswith("```"):
