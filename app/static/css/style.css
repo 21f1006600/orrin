@@ -187,21 +187,19 @@ a {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background-color: #14171f;
-    border: 1px solid #374151;
-    color: #d1d5db;
-    font-size: 12px;
-    padding: 6px 16px;
+    padding: 6px 14px;
     border-radius: 999px;
-    margin-bottom: 24px;
-}
+    border: 1px solid #22252e;
+    background: rgba(79,125,249,0.08);
+    color: #4f7df9;
+    font-size: 13px;
+    font-weight: 500;
+  }
 
-.hero-badge-dot {
-    width: 6px;
-    height: 6px;
-    background-color: #4f7df9;
-    border-radius: 50%;
-}
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #4f7df9;
+  }
 
 .hero-title {
     font-size: 60px;
@@ -224,6 +222,13 @@ a {
     justify-content: center;
     gap: 16px;
 }
+
+.connect-hint {
+    font-size: 13px;
+    color: #8b8f99;
+    margin-top: 12px;
+    text-align: center;
+  }
 
 /* ===== Demo card ===== */
 .demo-section {
@@ -719,12 +724,20 @@ a {
     border-right: 1px solid #22252e;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 20px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .dash-sidebar-top {
     margin-bottom: 32px;
+}
+
+.dash-sidebar-bottom {
+    margin-top: auto;
 }
 
 .dash-nav {
