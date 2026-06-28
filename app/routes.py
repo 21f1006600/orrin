@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, session
 from app import oauth, db, limiter, logger
 from app.models import User
 from app.sync import sync_slack_data, sync_linear_data
+from app import posthog
 
 main = Blueprint('main', __name__)
 
@@ -74,8 +75,11 @@ def google_callback():
 
     logger.info(f"Login successful: {existing_user.email}")
 
-    return redirect(url_for('main.connect'))
+    posthog.capture('user_logged_in', distinct_id=existing_user.email)
+    if is_new_signup:
+        posthog.capture('user_signed_up', distinct_id=existing_user.email)
 
+    return redirect(url_for('main.connect'))
 
 @main.route('/logout')
 def logout():
@@ -106,8 +110,9 @@ def slack_callback():
 
     logger.info(f"SLACK CONNECTED: {current_user.email} -> {current_user.slack_team_name}")
 
-    return redirect(url_for('main.connect'))
+    posthog.capture('slack_connected', distinct_id=current_user.email, properties={'workspace': current_user.slack_team_name})
 
+    return redirect(url_for('main.connect'))
 
 @main.route('/auth/linear')
 @limiter.limit("10 per minute")
@@ -142,8 +147,9 @@ def linear_callback():
 
     logger.info(f"LINEAR CONNECTED: {current_user.email} -> {current_user.linear_workspace_name}")
 
-    return redirect(url_for('main.connect'))
+    posthog.capture('linear_connected', distinct_id=current_user.email, properties={'workspace': current_user.linear_workspace_name})
 
+    return redirect(url_for('main.connect'))
 
 @main.route('/sync')
 @limiter.limit("5 per minute")
@@ -229,5 +235,7 @@ def dashboard_ask():
     result = ask_orrin(current_user, question)
 
     logger.info(f"QUESTION ASKED: {current_user.email} -> \"{question[:100]}\" (confidence: {result.get('confidence', 0)}%)")
+
+    posthog.capture('question_asked', distinct_id=current_user.email, properties={'confidence': result.get('confidence', 0)})
 
     return render_template('dashboard.html', user=current_user, result=result, question=question)

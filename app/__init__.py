@@ -11,6 +11,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from posthog import Posthog
 
 load_dotenv()
 
@@ -23,6 +24,12 @@ if os.getenv('FLASK_ENV') == 'production' and os.getenv('SENTRY_DSN'):
         environment="production",
         send_default_pii=True,  # attaches logged-in user's email to crash reports
     )
+
+posthog = Posthog(
+    os.getenv('POSTHOG_API_KEY'),
+    host='https://us.i.posthog.com',
+    disabled=os.getenv('FLASK_ENV') != 'production'
+)
 
 db = SQLAlchemy()
 oauth = OAuth()
