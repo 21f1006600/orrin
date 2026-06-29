@@ -26,6 +26,16 @@ if not MOCK_MODE:
     # check https://ai.google.dev/gemini-api/docs/models for current free-tier models if this breaks
     GEMINI_MODEL = 'gemini-2.5-flash-lite'
 
+    # Fallback provider - Groq, used only if Gemini fails after all retries.
+    # Independent infrastructure from Google, so a Gemini outage rarely affects Groq too.
+    # Free tier: 30 requests/minute, 1000-14400 requests/day depending on model, no card needed.
+    groq_key = os.getenv('GROQ_API_KEY')
+    groq_client = None
+    if groq_key:
+        from openai import OpenAI
+        groq_client = OpenAI(api_key=groq_key, base_url='https://api.groq.com/openai/v1')
+    GROQ_MODEL = 'llama-3.3-70b-versatile'
+
 
 def build_context(user):
     """Pull recent Slack messages and Linear issues for this user into a text block."""
@@ -123,25 +133,37 @@ Answer the question using only the data above. Return valid JSON only."""
         from google.genai import errors as genai_errors
 
         max_retries = 3
-        response = None
-        last_error = None
+        raw_text = None
 
+        # --- Primary provider: Gemini, with retries for transient overload ---
         for attempt in range(max_retries):
             try:
                 response = genai_client.models.generate_content(
                     model=GEMINI_MODEL,
                     contents=full_prompt
                 )
+                raw_text = response.text.strip()
                 break  # success, stop retrying
-            except genai_errors.ServerError as e:
-                last_error = e
+            except genai_errors.ServerError:
                 if attempt < max_retries - 1:
                     time.sleep(2 ** attempt)  # 1s, then 2s, then 4s between retries
                 continue
 
-        if response is None:
-            # Gemini's servers were overloaded for all retry attempts - genuinely temporary,
-            # not a bug in our code. Give the user a clear, honest message instead of a crash.
+        # --- Fallback provider: Groq, only tried if Gemini failed completely ---
+        if raw_text is None and groq_client:
+            try:
+                groq_response = groq_client.chat.completions.create(
+                    model=GROQ_MODEL,
+                    messages=[{"role": "user", "content": full_prompt}],
+                    temperature=0.3
+                )
+                raw_text = groq_response.choices[0].message.content.strip()
+            except Exception:
+                raw_text = None  # Groq also failed, fall through to the honest error below
+
+        if raw_text is None:
+            # Both Gemini and Groq failed - genuinely rare, both providers' infrastructure
+            # would need to be down simultaneously. Give the user a clear message, not a crash.
             return {
                 "answer": "Orrin's AI is experiencing high demand right now. Please try asking again in a moment.",
                 "confidence": 0,
@@ -150,8 +172,6 @@ Answer the question using only the data above. Return valid JSON only."""
                 "linear_sources": [],
                 "is_retryable": True
             }
-
-        raw_text = response.text.strip()
 
         if raw_text.startswith("```"):
             raw_text = raw_text.strip("`").replace("json\n", "", 1)

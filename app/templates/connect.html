@@ -8,7 +8,6 @@
         <div class="connect-header">
             <h1 class="connect-title">Connect your workspace</h1>
             <p class="connect-subtitle">Connect Slack, Linear, or both — Orrin works with whatever you give it.</p>
-           
         </div>
 
         <div class="connect-cards">
@@ -69,16 +68,19 @@
 
         </div>
 
+        <div class="connect-callout">
+            <span class="connect-callout-icon">i</span>
+            <p class="connect-callout-text">
+                <strong>One more step:</strong> invite the Orrin bot to the Slack channels or Linear teams you want it to read. Orrin can only see conversations and issues it's explicitly been added to.
+            </p>
+        </div>
+
         {% if user.slack_bot_token or user.linear_access_token %}
             <a href="/dashboard" class="btn btn-primary connect-continue">Go to dashboard →</a>
             {% if not (user.slack_bot_token and user.linear_access_token) %}
                 <p class="connect-footnote">You can start now, or connect the other tool for more complete answers.</p>
             {% endif %}
         {% else %}
-        <p class="connect-hint">
-            ⚠️ After connecting, make sure Orrin is invited to the Slack channels or 
-            Linear teams you want indexed — it can only see what it's explicitly added to.
-          </p>
             <p class="connect-footnote">Connect at least one tool to start asking questions.</p>
         {% endif %}
     </section>

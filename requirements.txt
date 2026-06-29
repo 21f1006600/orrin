@@ -11,3 +11,4 @@ psycopg2-binary
 gunicorn
 sentry-sdk[flask]
 posthog
+openai
