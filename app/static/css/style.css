@@ -756,6 +756,13 @@ a {
     flex-direction: column;
     justify-content: space-between;
     padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #0b0d12;
+    z-index: 100;
 }
 
 .dash-sidebar-top {
@@ -832,6 +839,7 @@ a {
 
 .dash-main {
     flex: 1;
+    margin-left: 240px;
     padding: 60px 40px;
     overflow-y: auto;
 }
@@ -844,25 +852,11 @@ a {
 }
 
 .ask-hero-dot {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background-color: #14171f;
-    border: 1px solid #22252e;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    display: block;
     margin: 0 auto 24px;
-    position: relative;
-}
-
-.ask-hero-dot::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 10px;
-    height: 10px;
-    background-color: #4f7df9;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .ask-hero-title {
@@ -1190,8 +1184,7 @@ a {
 .thinking-pulse {
     width: 56px;
     height: 56px;
-    border-radius: 50%;
-    background-color: #4f7df9;
+    object-fit: contain;
     margin-bottom: 24px;
     animation: thinking-pulse-anim 1.4s ease-in-out infinite;
 }
@@ -1310,5 +1303,169 @@ a {
     }
     .evidence-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* ===== Navbar - tighter spacing, smaller buttons ===== */
+    .navbar {
+        padding: 14px 16px;
+        grid-template-columns: auto 1fr auto;
+    }
+    .navbar-brand-name {
+        font-size: 15px;
+    }
+    .navbar-signin,
+    .navbar-logout {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .navbar-signin::before,
+    .navbar-logout::before {
+        width: 22px;
+        height: 22px;
+        margin-right: 6px;
+    }
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    /* ===== Footer - stack vertically instead of 3-column grid ===== */
+    .footer {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        text-align: center;
+        padding: 24px 20px;
+    }
+    .footer-brand,
+    .footer-tagline,
+    .footer-links {
+        justify-self: center;
+    }
+
+    /* ===== Dashboard - fixed sidebar becomes a top bar on mobile ===== */
+    .dash-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-right: none;
+        border-bottom: 1px solid #22252e;
+        z-index: 200;
+    }
+    .dash-sidebar-top {
+        margin-bottom: 0;
+    }
+    .dash-nav {
+        flex-direction: row;
+        gap: 8px;
+    }
+    .dash-nav-item {
+        padding: 8px 10px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    .dash-sidebar-bottom {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dash-user-pill {
+        padding: 6px 8px;
+    }
+    .dash-user-name,
+    .dash-user-sub {
+        display: none;
+    }
+    .dash-user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+    .dash-logout-btn {
+        margin-top: 0;
+        padding: 6px 10px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+    .dash-main {
+        margin-left: 0;
+        margin-top: 64px;
+        padding: 24px 16px;
+    }
+
+    /* ===== Ask Orrin hero ===== */
+    .ask-hero-title {
+        font-size: 24px;
+    }
+    .ask-suggested-grid {
+        grid-template-columns: 1fr;
+    }
+    .ask-form {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .ask-submit {
+        width: 100%;
+        height: 44px;
+    }
+
+    /* ===== Answer view ===== */
+    .answer-question {
+        font-size: 20px;
+    }
+    .answer-card {
+        padding: 18px;
+    }
+    .sources-grid {
+        grid-template-columns: 1fr;
+    }
+    .confidence-box {
+        flex-wrap: wrap;
+    }
+
+    /* ===== Connect page ===== */
+    .connect-cards {
+        grid-template-columns: 1fr;
+    }
+    .connect-title {
+        font-size: 26px;
+    }
+    .connect-callout {
+        flex-direction: column;
+        text-align: left;
+    }
+
+    /* ===== Auth card ===== */
+    .auth-card {
+        padding: 32px 24px;
+        max-width: 100%;
+    }
+
+    /* ===== Thinking overlay ===== */
+    .thinking-text {
+        font-size: 16px;
+        padding: 0 24px;
+        text-align: center;
+    }
+    .thinking-subtext {
+        padding: 0 24px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dash-nav-item {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    .navbar-brand-name {
+        display: none;
+    }
+    .hero-title {
+        font-size: 28px;
     }
 }
