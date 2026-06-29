@@ -28,7 +28,10 @@ if os.getenv('FLASK_ENV') == 'production' and os.getenv('SENTRY_DSN'):
 posthog = Posthog(
     os.getenv('POSTHOG_API_KEY'),
     host='https://us.i.posthog.com',
-    disabled=os.getenv('FLASK_ENV') != 'production'
+    disabled=os.getenv('FLASK_ENV') != 'production',
+    sync_mode=True  # send events immediately instead of buffering in the background -
+                     # Railway's gunicorn workers can finish and recycle a request before
+                     # a buffered event gets flushed, silently dropping it otherwise
 )
 
 db = SQLAlchemy()
