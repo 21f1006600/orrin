@@ -28,6 +28,15 @@ def get_current_user():
 def index():
     return render_template('index.html')
 
+@main.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+
+@main.route('/terms')
+def terms():
+    return render_template('terms.html')    
+
 
 @main.route('/login')
 @limiter.limit("20 per minute")

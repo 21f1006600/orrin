@@ -1492,3 +1492,56 @@ a {
         font-size: 28px;
     }
 }
+
+.legal-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+}
+
+.legal-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.legal-updated {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+.legal-heading {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    color: #f5f5f7;
+}
+
+.legal-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #d1d5db;
+    margin-bottom: 16px;
+}
+
+.legal-list {
+    margin: 0 0 16px 20px;
+    padding: 0;
+}
+
+.legal-list li {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #d1d5db;
+    margin-bottom: 8px;
+}
+
+.legal-link {
+    color: #4f7df9;
+}
+
+.legal-link:hover {
+    text-decoration: underline;
+}

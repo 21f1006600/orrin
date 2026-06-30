@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}Privacy Policy — Orrin{% endblock %}
+
+{% block content %}
+
+    <section class="legal-section">
+        <div class="legal-content">
+            <h1 class="legal-title">Privacy Policy</h1>
+            <p class="legal-updated">Last updated: June 2026</p>
+
+            <p class="legal-text">
+                Orrin ("we," "our," or "the app") is an AI tool that connects to Slack and Linear
+                to answer operational questions about your team. This policy explains what
+                information we collect, how we use it, and how you can control it.
+            </p>
+
+            <h2 class="legal-heading">What We Collect</h2>
+            <ul class="legal-list">
+                <li><strong>Account information</strong> — your name, email address, and profile picture from Google sign-in.</li>
+                <li><strong>Slack data</strong> — messages from channels you explicitly add Orrin to, channel names, and basic user names, so Orrin can answer questions about your team's conversations.</li>
+                <li><strong>Linear data</strong> — issue titles, descriptions, statuses, and assignees from your connected Linear workspace.</li>
+                <li><strong>Usage data</strong> — questions you ask Orrin and basic product analytics (e.g. sign-ups, connections made), used to improve the product.</li>
+            </ul>
+
+            <h2 class="legal-heading">How We Use It</h2>
+            <ul class="legal-list">
+                <li>To answer your questions by analyzing your connected Slack and Linear data using AI.</li>
+                <li>To show you which messages or issues informed each answer (source citations).</li>
+                <li>To improve Orrin based on real usage patterns.</li>
+            </ul>
+            <p class="legal-text">
+                We do not sell your data. We do not use your Slack or Linear content to train
+                third-party AI models beyond the single request needed to answer your question.
+            </p>
+
+            <h2 class="legal-heading">Third-Party Services</h2>
+            <p class="legal-text">
+                Orrin uses the following third-party services to operate. Each has its own privacy policy:
+            </p>
+            <ul class="legal-list">
+                <li>Google (sign-in)</li>
+                <li>Slack (message and workspace data, only for channels Orrin is explicitly added to)</li>
+                <li>Linear (issue and workspace data)</li>
+                <li>Google Gemini and Groq (AI processing of your questions and connected data, to generate answers)</li>
+                <li>Sentry (error monitoring) and PostHog (product analytics)</li>
+            </ul>
+
+            <h2 class="legal-heading">Your Control</h2>
+            <ul class="legal-list">
+                <li>You can disconnect Slack or Linear at any time from the Connect page — this deletes the associated synced data from our database immediately.</li>
+                <li>You can log out at any time, ending your session.</li>
+                <li>To request full account deletion, contact us at the email below.</li>
+            </ul>
+
+            <h2 class="legal-heading">Data Storage</h2>
+            <p class="legal-text">
+                Your data is stored securely in a PostgreSQL database hosted on Railway.
+                Access tokens are used only to fetch the data needed to answer your questions
+                and are never shared with anyone outside the services listed above.
+            </p>
+
+            <h2 class="legal-heading">Contact</h2>
+            <p class="legal-text">
+                Questions about this policy or your data? Reach out at
+                <a href="mailto:hello@getorrin.xyz" class="legal-link">hello@getorrin.xyz</a>.
+            </p>
+
+            <h2 class="legal-heading">Changes to This Policy</h2>
+            <p class="legal-text">
+                We may update this policy as Orrin evolves. Significant changes will be reflected
+                here with an updated date at the top of this page.
+            </p>
+        </div>
+    </section>
+
+{% endblock %}
