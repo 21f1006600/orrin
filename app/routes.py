@@ -81,6 +81,7 @@ def google_callback():
 
     return redirect(url_for('main.connect'))
 
+
 @main.route('/logout')
 def logout():
     session.clear()
@@ -113,6 +114,36 @@ def slack_callback():
     posthog.capture('slack_connected', distinct_id=current_user.email, properties={'workspace': current_user.slack_team_name})
 
     return redirect(url_for('main.connect'))
+
+
+@main.route('/disconnect/slack', methods=['POST'])
+@limiter.limit("10 per minute")
+def disconnect_slack():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+
+    current_user = get_current_user()
+    if current_user is None:
+        return redirect(url_for('main.login'))
+
+    from app.models import SlackMessage
+
+    # Clear connection details
+    current_user.slack_team_id = None
+    current_user.slack_team_name = None
+    current_user.slack_bot_token = None
+
+    # Remove previously synced data so a future reconnect starts clean,
+    # rather than mixing old workspace data with a newly connected one
+    SlackMessage.query.filter_by(user_id=current_user.id).delete()
+
+    db.session.commit()
+
+    logger.info(f"SLACK DISCONNECTED: {current_user.email}")
+    posthog.capture('slack_disconnected', distinct_id=current_user.email)
+
+    return redirect(url_for('main.connect'))
+
 
 @main.route('/auth/linear')
 @limiter.limit("10 per minute")
@@ -150,6 +181,32 @@ def linear_callback():
     posthog.capture('linear_connected', distinct_id=current_user.email, properties={'workspace': current_user.linear_workspace_name})
 
     return redirect(url_for('main.connect'))
+
+
+@main.route('/disconnect/linear', methods=['POST'])
+@limiter.limit("10 per minute")
+def disconnect_linear():
+    if 'user_email' not in session:
+        return redirect(url_for('main.login'))
+
+    current_user = get_current_user()
+    if current_user is None:
+        return redirect(url_for('main.login'))
+
+    from app.models import LinearIssue
+
+    current_user.linear_access_token = None
+    current_user.linear_workspace_name = None
+
+    LinearIssue.query.filter_by(user_id=current_user.id).delete()
+
+    db.session.commit()
+
+    logger.info(f"LINEAR DISCONNECTED: {current_user.email}")
+    posthog.capture('linear_disconnected', distinct_id=current_user.email)
+
+    return redirect(url_for('main.connect'))
+
 
 @main.route('/sync')
 @limiter.limit("5 per minute")

@@ -742,6 +742,29 @@ a {
     color: #f5f5f7;
 }
 
+// disconnect button
+
+.disconnect-form {
+    width: 100%;
+}
+
+.btn-disconnect {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-disconnect:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+}
+
 /* ===== Dashboard layout ===== */
 .dash-layout {
     display: flex;

@@ -36,6 +36,11 @@
                 </p>
                 {% if not user.slack_bot_token %}
                     <a href="{{ url_for('main.slack_login') }}" class="btn btn-secondary connect-btn">Connect Slack</a>
+                {% else %}
+                    <form action="{{ url_for('main.disconnect_slack') }}" method="POST" class="disconnect-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-disconnect" onclick="return confirm('Disconnect Slack? Synced messages will be removed and you can reconnect to a different workspace anytime.')">Disconnect</button>
+                    </form>
                 {% endif %}
             </div>
 
@@ -63,6 +68,11 @@
                 </p>
                 {% if not user.linear_access_token %}
                     <a href="{{ url_for('main.linear_login') }}" class="btn btn-secondary connect-btn">Connect Linear</a>
+                {% else %}
+                    <form action="{{ url_for('main.disconnect_linear') }}" method="POST" class="disconnect-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-disconnect" onclick="return confirm('Disconnect Linear? Synced issues will be removed and you can reconnect to a different workspace anytime.')">Disconnect</button>
+                    </form>
                 {% endif %}
             </div>
 
